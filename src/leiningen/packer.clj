@@ -13,12 +13,13 @@
 (defn- do-mapping [mapping]
   (let [s (seq mapping)]
     (doseq [{:keys [source-paths target-path]} s]
-      (let [dest (str (fs/file target-path))]
-        (doseq [sp source-paths]
-          (if (instance? java.util.regex.Pattern sp)
-            (doseq [p (find-files sp)]
-              (fs/copy-dir p dest))
-            (fs/copy-dir sp dest)))))))
+      (when-not (fs/exists? target-path)
+        (fs/mkdir target-path))
+      (doseq [sp source-paths]
+        (if (instance? java.util.regex.Pattern sp)
+          (doseq [p (find-files sp)]
+            (fs/copy-dir p (str (fs/file target-path))))
+          (fs/copy-dir sp (str (fs/file target-path))))))))
 
 (defn- once
   [project
