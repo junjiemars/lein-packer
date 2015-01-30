@@ -69,7 +69,7 @@
           (if (instance? java.util.regex.Pattern p)
             (doseq [f (re-files p)] (copy-file f d))
             (if (directory? p)
-              (do (copy-dir-lear p d)
+              (do (copy-dir-leaf p d)
                   (copy-dir p d))
               (copy-file p d))))))))
 
