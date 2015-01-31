@@ -44,7 +44,7 @@
   "Copy the file to the dir"
   (let [f (io/file file)
         d (io/file dir)]
-    (m/debug  "#copy-file:" file " to " dir)
+    (m/debug  "#copy-file:" file "|" dir)
     (io/copy file (join-path d f))))
 
 (defn copy-dir [source destination]
@@ -56,7 +56,18 @@
         (copy-file f d)
         (copy-dir f (join-path d f))))))
 
-(defn transfer [mapping]
+(defn delete-dir [dir]
+  "Remove dir recursively"
+  (let [d (io/file dir)]
+    (m/debug "#delete-dir:" d)
+    (if (directory? d)
+      (do 
+        (doseq [f (.listFiles d)]
+          (delete-dir f))
+        (io/delete-file d))
+      (io/delete-file d))))
+
+(defn transfer-mapping [mapping]
   "Transfer the mapping files"
   (let [s (seq mapping)]
     (doseq [{:keys [source-paths target-path]} s]
@@ -68,24 +79,32 @@
               (copy-dir p d)
               (copy-file p d))))))))
 
+(defn remove-target [mapping target]
+  "Remove the mapping files and target file"
+  (let [s (seq mapping)
+        ;m target
+        ]
+    (doseq [{:keys [source-paths target-path]} s]
+      (delete-dir target-path))))
+
 (defn once
   [project
    {{:keys [mapping target]
      :as options} :pack}
    args]
-  (do
-    (m/debug "#once:")
-    (m/debug "#mapping:" mapping)
-    (transfer mapping)))
+  (m/debug "#once:")
+  (m/debug "#mapping:" mapping)
+  (transfer-mapping mapping))
 
 (defn clean
   [project
-   options
+   {{:keys [mapping target]
+     :as options} :pack} 
    args]
-  (do
-    (m/debug "#clean:")
-    (m/debug "#options:" options)
-    (m/debug "#args:" args)))
+  (m/debug "#clean:")
+  (m/debug "#options:" options)
+  (m/debug "#args:" args)
+  (remove-target mapping target))
 
 (defn packer
   "Run the packer plugin."
