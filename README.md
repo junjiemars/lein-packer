@@ -1,22 +1,29 @@
 # lein-packer
 
-A Leiningen plugin to do many wonderful things.
+A Leiningen plugin to pack file resources.
 
-## Usage
+## How to use
 
-FIXME: Use this for user-level plugins:
+1. put `[lein-packer "0.1.0"]` into the `:plugins` vector of your project.clj.
+2. add :pack section into your project.clj, like the following:
 
-Put `[lein-packer "0.1.0-SNAPSHOT"]` into the `:plugins` vector of your
-`:user` profile, or if you are on Leiningen 1.x do `lein plugin install
-lein-packer 0.1.0-SNAPSHOT`.
-
-FIXME: Use this for project-level plugins:
-
-Put `[lein-packer "0.1.0-SNAPSHOT"]` into the `:plugins` vector of your project.clj.
-
-FIXME: and add an example usage that actually makes sense:
-
-    $ lein packer
+```clojure
+                   :pack {:mapping [{:source-paths ["manifest.json"
+                                                    "resources/public"]
+                                     :target-path "target/packed"
+                                     :excludes [#"\w+\.\w+\~"]
+                                     }]
+                          :target {:type "crx"
+                                   :path "target/"}}}
+```   
+3. once task:
+```shell
+lein packer once
+```
+4. clean task: 
+```shell
+lein packer clean
+```
 
 ## License
 
