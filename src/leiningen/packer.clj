@@ -40,21 +40,30 @@
         d (io/file (.getParent f))]
     (filter #(re-find re (.getPath ^java.io.File %)) (file-seq d))))
 
-(defn copy-file [file dir]
+(defn re-excludes [re file]
+  "If the file is not include in re pattern then return it"
+  (let [f (io/file file)
+        r (seq re)]
+    (when (not-any? #(not (nil? %))
+                    (map #(re-find % (.getName f)) r))
+      f)))
+
+(defn copy-file [file dir excludes]
   "Copy the file to the dir"
   (let [f (io/file file)
         d (io/file dir)]
-    (m/debug  "#copy-file:" f "|" d)
-    (io/copy f (join-path d f))))
+    (when (re-excludes excludes file)
+      (m/debug  "#copy-file:" f "|" d)
+      (io/copy f (join-path d f)))))
 
-(defn copy-dir [source destination]
+(defn copy-dir [source destination excludes]
   "Iterated copy directories and it's sub directories"
   (let [s (io/file source)
         d (mkdir destination)]
     (doseq [f (.listFiles ^java.io.File s)]
       (if-not (directory? f)
-        (copy-file f d)
-        (copy-dir f (join-path d f))))))
+        (copy-file f d excludes)
+        (copy-dir f (join-path d f) excludes)))))
 
 (defn delete-dir [dir]
   "Remove dir recursively"
@@ -70,14 +79,14 @@
 (defn transfer-mapping [mapping]
   "Transfer the mapping files"
   (let [s (seq mapping)]
-    (doseq [{:keys [source-paths target-path]} s]
+    (doseq [{:keys [source-paths target-path excludes]} s]
       (let [d (mkdir target-path)]
         (doseq [p source-paths]
           (if (instance? java.util.regex.Pattern p)
-            (doseq [f (re-files p)] (copy-file f d))
+            (doseq [f (re-files p)] (copy-file f d excludes))
             (if (directory? p)
-              (copy-dir p d)
-              (copy-file p d))))))))
+              (copy-dir p d excludes)
+              (copy-file p d excludes))))))))
 
 (defn remove-target [mapping target]
   "Remove the mapping files and target file"
@@ -88,6 +97,7 @@
       (delete-dir target-path))))
 
 (defn once
+  "Pack the resources via mapping files, directories, regex-patterns"
   [project
    {{:keys [mapping target]
      :as options} :pack}
@@ -97,6 +107,7 @@
   (transfer-mapping mapping))
 
 (defn clean
+  "Clean the packed resources"
   [project
    {{:keys [mapping target]
      :as options} :pack} 
