@@ -44,8 +44,8 @@
   "Copy the file to the dir"
   (let [f (io/file file)
         d (io/file dir)]
-    (m/debug  "#copy-file:" file "|" dir)
-    (io/copy file (join-path d f))))
+    (m/debug  "#copy-file:" f "|" d)
+    (io/copy f (join-path d f))))
 
 (defn copy-dir [source destination]
   "Iterated copy directories and it's sub directories"
