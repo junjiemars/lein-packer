@@ -118,7 +118,7 @@
   (remove-target mapping target))
 
 (defn packer
-  "Run the packer plugin."
+  "Pack the file resources of the project."
   {:help-arglists '([once clean])
    :subtasks [#'once #'clean]}
   ([project]
