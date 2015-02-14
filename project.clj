@@ -1,10 +1,8 @@
-(defproject org.clojars.junjiemars/lein-packer "0.1.0"
+(defproject lein-packer "0.1.0"
   :description "Pack the file resources of the project"
   :url "https://github.com/junjiemars/lein-packer"
   :scm {:name "git"
         :url "https://github.com/junjiemars/lein-packer"}
-  :signing {:gpg-key "junjiemars@gmail.com"}
-  :deploy-repositories [["clojars" {:creds :gpg}]]
   :pom-addition [:developers [:developer
                               [:name "Junjie Mars"
                                :url "https://github.com/junjiemars"

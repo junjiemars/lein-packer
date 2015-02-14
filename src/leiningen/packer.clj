@@ -2,7 +2,8 @@
   (:require [leiningen.help :as h]
             [leiningen.core.main :as m]
             [clojure.java.io :as io]
-            [clojure.pprint :refer [pprint]])
+            [clojure.pprint :refer [pprint]]
+            [robert.hooke :as rh])
   (:import java.io.File))
 
 (set! *warn-on-reflection* true)
@@ -16,7 +17,7 @@
 (defn mkdir [dir]
   "If dir is not exists or is not a directory then return it, "
   "otherwise return it directly"
-  (let [d (io/file dir)]
+  (when-let [d (io/file dir)]
     (when-not (and (.exists d)
                    (.isDirectory d))
       (let [p (.getParent ^java.io.File d)]
@@ -134,3 +135,18 @@
          (m/info "Subtask "  subtask " not found."
                  (h/subtask-help-for *ns* #'packer))
          (m/abort))))))
+
+(defn compile-hook [task & args]
+  (m/debug "#compile-hook:entry")
+  (m/debug (str "#first-of-args:" (first args)))
+  (apply task args)
+  (packer (first args) "once")
+  (m/debug "#compile-hook:exit"))
+
+(defn activate
+  "Set up hooks for the packer plugin, the hooks will run after 'compile or 'clean."
+  []
+  (m/debug "#activate:entry")
+  (rh/add-hook #'leiningen.compile/compile #'compile-hook)
+  (m/debug "#activate:exit")
+  )
