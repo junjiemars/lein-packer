@@ -138,7 +138,7 @@
 
 (defn compile-hook [task & args]
   (m/debug "#compile-hook:entry")
-  (m/debug (str "#first-of-args:" (first args)))
+  (m/debug (str "#(first args):" (first args)))
   (apply task args)
   (packer (first args) "once")
   (m/debug "#compile-hook:exit"))
