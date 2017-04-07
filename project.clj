@@ -1,4 +1,4 @@
-(defproject lein-packer "0.1.0"
+(defproject lein-packer "0.1.1"
   :description "Pack the file resources of the project"
   :url "https://github.com/junjiemars/lein-packer"
   :scm {:name "git"

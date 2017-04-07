@@ -3,6 +3,7 @@
             [leiningen.core.main :as m]
             [clojure.java.io :as io]
             [clojure.pprint :refer [pprint]]
+            [leiningen.compile :as lc]
             [robert.hooke :as rh])
   (:import java.io.File))
 
@@ -147,6 +148,6 @@
   "Set up hooks for the packer plugin, the hooks will run after 'compile or 'clean."
   []
   (m/debug "#activate:entry")
-  (rh/add-hook #'leiningen.compile/compile #'compile-hook)
+  (rh/add-hook #'lc/compile #'compile-hook)
   (m/debug "#activate:exit")
   )
